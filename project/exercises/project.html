@@ -1,0 +1,197 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>OQEP</title>
+
+	<link rel="stylesheet" href='../styles/project.css'>
+	<script src="../scripts/jquery-3.4.1.min.js"></script>
+	<script src="../scripts/data.js"></script>
+</head>
+
+<body>
+	<header>
+		<h1>Office of the Quality Enhancement Plan</h1>
+		<h2>Appalachian State University</h2>
+
+		<nav class = "navbar">
+
+			<ul class = "navul">
+				<li><a class="active" href="#">Search</a></li>
+				<li><a href="https://qep.appstate.edu/" title="Real Page">Real QEP</a></li>
+				<li><a href="#">Contact</a>
+				<li><a href="#" title="Funding">Funding</a></li>
+				<li><a href="#" title="Curricular Actions">Curricular Actions</a></li>
+				<li><a href="#" title="Training and Development">Training &amp; Development</a></li>
+				<li><a href="#" title="Assessment">Assessment</a></li>
+				<li><a href="#"title="Freshman Survey">Freshman Survey</a></li>
+			</ul>
+        </nav>
+
+	</header>
+
+	<main>
+		<article>
+			<h3>Search by Language</h3>
+
+			<select id="langHTML" class="langHTML">
+				<!--Won't let you reselect select a language which is good-->
+				<option value="none" selected disabled>Select A Language</option>
+			</select>
+
+			<select id="proficiency" class="proficiency">
+				<option value="high">High</option>
+				<option value="med">Medium</option>
+				<option value="low" selected>Low</option> <!--start with-->
+			</select>
+
+			<button id="langSearch" type="button">Search</button>
+			<button id="langClear" type="button">Clear</button><br>
+
+
+			<table id="langTable">
+				<thead>
+					<th>First Name</th>
+					<th>Last Name</th>
+					<th>Language</th>
+					<th>Level of Proficiency</th>
+					<th>Email</th>
+				</thead>
+				<tbody id="langTableBody"></tbody>
+
+			</table>
+		</article>
+
+		<article>
+			<h3>Search by Department, College, Country and Last Name</h3>
+
+			<select id="department">
+				<option value="none" selected disabled>Select an Academic Department</option>
+			</select>
+			<select id="college">
+				<option value="none" selected disabled>Select an Academic College</option>
+			</select>
+			<select id="country">
+				<option value="none" selected disabled>Select a Country</option>
+			</select>
+			<select id="lName">
+				<option value="none" selected disabled>Select a Last Name</option>
+			</select>
+
+			<button id="deptSearch" type="button">Search</button>
+			<button id="deptClear" type="button">Clear</button><br>
+
+			<table id="project_table">
+				<thead>
+					<th>First Name</th>
+					<th>Last Name</th>
+					<th>College</th>
+					<th>Department</th>
+					<th>Country</th>
+					<th>Travelled</th>
+					<th>Project Description</th>
+				</thead>
+				<tbody id="project_table_body">
+				</tbody>
+
+			</table>
+		</article>
+
+		<article>
+			<h3>Study Abroad Opportunities</h3>
+			<select id="term">
+				<option value="none" selected disabled>Select a Term</option>
+			</select>
+			<select id="program">
+				<option value="none" selected disabled>Select a Program</option>
+			</select>
+			<select id="country2">
+				<option value="none" selected disabled>Select a Country</option>
+			</select>
+			<select id="date">
+				<option value="none" selected disabled>Select a Date</option>
+			</select>
+
+			<button id="abroadSearch" type="button">Search</button>
+			<button id="abroadClear" type="button">Clear</button><br>
+
+			<table id="broadTable">
+				<thead>
+					<th>Term</th>
+					<th>Program Name</th>
+					<th>Country</th>
+					<th>Department</th>
+					<th>College</th>
+					<th>Dates</th>
+					<th>Level</th>
+					<th>Credits Available</th>
+				</thead>
+				<tbody id="abroadTableBody">
+				</tbody>
+
+			</table>
+		</article>
+	</main>
+
+	<aside class="aside1">
+		<section>
+			<h5>Download QEP</h5>
+
+            <img src="../images/qep_cover_revised.png.jpg" alt="logo">
+
+		</section>
+
+		<section>
+			<h5>APPALACHIAN STATISTICS</h5>
+
+			<h3><strong>25%</strong></h3>
+			<p>Participation rate for study abroad, compared to national rate of 14 percent</p>
+
+			<h3>680 to 1,047</h3>
+			<p>growth of students participating in study abroad for academic credit, from 2008-09 to 2013-14</p>
+
+			<h3>170-180</h3>
+			<p>number of international campus activities in 2013-14</p>
+
+			<h3>100+</h3>
+			<p>number of international courses</p>
+
+			<p>Source: Office of International Education and Development</p>
+		</section>
+
+		<section>
+			<h5>QEP QUESTIONS?</h5>
+			<p>For more information, call the Office of the QEP at 828-262-8116 or email:</p>
+
+			<p>Dr. Garner Dewey
+				<br>Director of the QEP
+				<br><a href="deweygg@appstate.edu">deweygg@appstate.edu</a>
+			</p>
+
+			<p>Mrs. Terri L. Lockwood
+				<br>Director of Programs
+				<br><a href="lockwodtl@appstate.edu">lockwodtl@appstate.edu</a>
+			</p>
+
+			<p>Or send general questions and requests to <a href="qep@appstate.edu">qep@appstate.edu</a></p>
+
+			<img src="../images/qep-logo.jpg" alt="logo">
+		</section>			
+	</aside>
+	<footer>
+		<ul>
+			<li><a href="">Home</a></li>
+			<li><a href="https://www.myasu.appstate.edu">MyASU</a></li>
+			<li><a href="https://www.support.appstate.edu">Support</a></li>
+			<li><a href="https://www.webmaster.appstate.edu">Webmaster</a></li>
+			<li><a href="https://www.emergency.appstate.edu">Emergency Info</a></li>
+			<li><a href="https://www.appstate.edu/disclaimer.php">Disclaimer</a></li>
+			<li><a href="https://www.edc.appstate.edu/equity/EOpolicy.html">EO Policy</a></li>
+		</ul>
+		<p>&copy; Appalachian State University 2019. All rights reserved.</p>
+		<img src="../images/footer-logo.gif" alt="footer logo">
+	</footer>
+	<script src="../scripts/project.js"></script>
+</body>
+</html>

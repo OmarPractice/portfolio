@@ -1,0 +1,136 @@
+h1{
+	font-weight: normal;
+	font-size: 250%;
+}
+
+nav {
+	display: block;
+	grid-area: nv;
+	background-color: black;
+	color: white;
+
+	width: 100%;
+}
+
+nav a:hover{
+	grid-area: nv;
+	color: gold;
+	background-color: black;
+	width: 100%;
+}
+ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	background-color: #333;
+}
+
+li {
+	float: left;
+	border-right:1px solid #bbb;
+}
+
+li:last-child {
+	border-right: none;
+}
+
+li a {
+	display: block;
+	color: white;
+	text-align: center;
+	padding: 14px 16px;
+	text-decoration: none;
+}
+
+li a:hover:not(.active) {
+	background-color: #111;
+}
+
+.active {
+	background-color: darkgoldenrod;
+}
+
+
+
+body {
+  	font-family: Georgia, Times, sans-serif;
+	border-top: 5px solid #f4c20a;
+	margin: 0px;
+	height: 100%;
+	width: 100%;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, 1fr);
+	grid-template-areas:
+                "hd hd hd hd hd hd hd hd hd hd"
+				"nv nv nv nv nv nv nv nv nv nv"
+				"as mn mn mn mn mn mn mn mn mn"
+				"as mn mn mn mn mn mn mn mn mn"
+				"as mn mn mn mn mn mn mn mn mn"
+				"as mn mn mn mn mn mn mn mn mn"
+				"ft ft ft ft ft ft ft ft ft ft"
+	
+}
+
+aside {
+	grid-area: as;
+	margin: 5px;
+	padding: 10px;
+}
+
+section {
+	border: 1px inset black;
+	margin: 5px;
+	padding: 10px;
+}
+
+
+header {
+	grid-area: hd;
+	background-color: white;
+	padding: 5px 10px 5px 10px;
+	border-bottom-left-radius: 15px;
+	border-bottom-right-radius: 15px;
+	font-weight: normal;
+	margin: 0 0 0.5em 0;
+}
+
+footer {
+	grid-area: ft;
+	padding: 10px;
+	background-color: Gold;
+}
+
+main {
+	grid-area: mn;
+	margin: 5px;
+	padding: 10px;
+	overflow: auto;
+}
+
+article {
+	margin: 5px;
+	padding: 10px;
+	border: 1px solid black;
+	grid-area: ar;
+}
+
+table {
+  	font-family: Georgia, Times, sans-serif;
+  	border-collapse: collapse;
+  	width: 100%;
+}
+
+th {
+    	background-color: white;
+}
+
+th, td {
+  	padding: 8px;
+  	text-align: left;
+  	border-bottom: 3px solid white;
+}
+
+tr:nth-child(even) {
+    	background-color: white;
+}

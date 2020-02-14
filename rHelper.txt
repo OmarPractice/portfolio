@@ -1,0 +1,607 @@
+---
+title: "STT3850 Exam 2 Version Study Guide"
+
+author: "Name: Omar Norombaba"
+
+date: '`r format(Sys.time(), "%b %d, %Y")`'
+
+output:
+
+  bookdown::html_document2:
+
+    highlight: textmate
+
+    theme: yeti
+---
+
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.align = "center", comment = NA)
+
+library(tidyverse)
+
+library(resampledata)
+
+library(nycflights13)
+
+library(knitr)
+
+library(dplyr)
+
+library(skimr)
+
+library(moderndive)
+
+library(ggplot2)
+library(ISLR)
+library(plotly)
+
+
+```
+
+
+#Quiz 5:
+How do we define a hypothesis?
+For beerwings dataset we want to tell if males consume more beer than females
+
+on average, there is no difference beer consumed between males and females: H0
+$H_0:\mu_M - \mu_F = 0$ or $H_0:\mu_M = \mu_F$
+
+The alternative hypothesis is: Ha
+
+$H_0:\mu_M - \mu_F > 0$ or $H_0:\mu_M > \mu_F$
+
+Test your hypotheses:
+
+```{r}
+# Difference betwen the average times...
+
+#Get the means
+ANS <- Beerwings %>% 
+  group_by(Gender) %>% 
+  summarize(myMean = mean(Beer), myN = n())
+ANS #F	22.0	15 (gender, mean, myN)	
+    #M	30.4	15	
+
+
+#Observed Difference = Mean - mean
+ObservedDifference <- ANS[2, 2] - ANS[1, 2]# male mean - female mean
+OD = ObservedDifference$myMean  
+OD # male mean - female mean = 8.4
+
+####################################################################
+
+set.seed(123)
+sims <- 10^4 - 1 # Number of simulations (iterations)
+ans <- numeric(sims)
+for(i in 1:sims)
+  { #n = myN + myN for male and female (15+15=30) or use #glimpse 
+    index <- sample.int(n = 30, size = 15, replace = FALSE)
+    ans[i] <- mean(Beerwings$Beer[index]) - mean(Beerwings$Beer[-index])
+  }
+
+
+#>= because we made it positive by choice (by picking to sub Male myMean - F myMean) else use <=
+  
+ # if we dont care iff its bigger or smaller (just different) you would stick a 2* before(sum(ans))
+pvalue <- (sum(ans >= OD) + 1)/(sims + 1) # Here OD = 8.4
+pvalue
+
+#Pvalue = 0.0313 (for beerwings)
+```
+How do we get to the pvalue? what is the pvalue?
+Pvalue = 0.0313 (for beerwings)
+
+compare Pvalue = 0.0313 (for beerwings) with given value 0.05:
+  
+Technical Conclusion:
+  0.0313 is less than 0.05 so we REJECT Ho (Ho: Um = Uf)
+  
+  *Non-Technical Conclusion:
+    Since we cross out Ho we have to conclude for Ha since it's the only thing left:
+  "There is enough evidence to conclude that men consume more beer than females"
+
+  
+Let's play with the Pvalue to get used to writing conclusions:
+
+Pvalue = 1.2 #SHOULD NEVER BE > 1 YOU DID SOMETHING TERRIBLY WRONG
+
+if pvalue = 0.21
+  *Technical Conclusion:
+0.21 > 0.05 so FAIL TO Reject Ho (WE have to use Ho)
+
+  *Non-Technical Conclusion:
+
+--------------  
+
+#Quiz 6
+
+1. Load Beerwings dataset from resampledata library
+ - just do libaray(resampledata)
+2. Our goal is to make a regression model to *predict* the ounces of [beer consumed] using number of hot wings consumed.
+
+      *Response Var*: Beer = y
+      *Explanatory Var*: Hotwings = x
+The variable we want to *predit is the response variable*, and denote by y.   
+
+The variable(s) that we use to predict y are called the *predictor(s) or explanatory variable(s)* and denote by x
+
+3. Conduct an *EDA* (Exploratory data analysis) for Beer and Hotwings:
+  EDA:
+i.  Just looking at the raw values, in a spreadsheet for example.
+ii. Summary statistics likes means, medians, and standard deviations.
+iii.Creating data visualizations.
+
+- looking at the raw values: View(Beerwings) in console
+
+-- Summary Stats: skim() gives summary statistics
+*numerical can give statistics about them mean, median, and st dev*
+```{r}
+#filter only what we need (not gender)
+bwing <- Beerwings %>%
+  select(Beer, Hotwings)
+skim(bwing)
+summary(bwing)
+IQR(Beerwings$Beer)
+```
+
+--- Creating data visualizations
+  skim above gave us two histograms and some summar stats
+  
+  Looking at the histograms Beer looks kind of flat it doesn't really look skewed right or left. 
+  
+  We could use IQR(Beerwings$Beer) to get the IQR (36 - 24)
+  Summary(bwing) tells us max and minimums for variables.
+  Basically list everything you can 
+
+-------------------------------------------------------
+
+#QUIZ 7 (the one where you didnt graph properly and build a formula)
+
+Build a simple linear regression model (simple means only one x) to PREDICT the ounces of Beer (predict beer = BEER BECOMES YOUR Y)
+Gender doesn't matter here (it's not mentioned)
+
+The equation of the regression line is y^=b0+b1⋅x
+
+Data = Beerwings
+b0 = Intercept Coefficient      
+b1 = Slope Coeff for hotwings      
+X = Hotwings
+Y = Beer
+
+```{r}
+score_model <- lm(Beer ~ Hotwings, data = Beerwings)
+score_model
+```
+b0 = 3.040
+b1 = 1.941
+   y^ =   b0  +   b1  *    x
+Beer^ = 3.040 + 1.941 * Hotwings  
+
+Can't really have 1.941 * 0 since the minimum wings consumed was 4.
+For every 1 Hotwing consumed 1.941 onces of beer was consumed
+
+we cans say For every increase of 1 unit in Hotwings, there is an associated increase of, on average, 1.941 units of Beer.
+
+----------------------------------------------------------
+
+#Chapter 6
+
+##Correlation (r) Coefficient get_correlation()
+  >relationship between two numerical variables; a summary statistic that simultaneously considers both variables.
+  
+  *In class we said that our cutoff for correlation would be 0.6
+  
+  * -1 perfectly negative relationship: one goes up, the other go down.
+ 
+  * 0  no relationship: they do whatever independently 
+  
+  * +1 perfectly positve relationship: one goes up, the other go up
+
+```{r}
+evals %>% 
+  get_correlation(formula = score ~ bty_avg) #tables
+
+#Another way yo get the correlations is:
+
+cor(x = evals$bty_avg, y = evals$score)#consle data
+
+#Since r = 0.187 it's very close to zero so it's **not good enough** to say there's a correlation.
+```
+##Visualizing data
+
+  
+```{r}
+evals_onex <- evals %>%
+  select(score, bty_avg)
+
+
+#scatterplot two numericals
+ggplot(evals_onex, mapping = aes(x = bty_avg, y = score)) +
+  geom_point() +
+   labs(x = "Beauty Score", y = "Teaching Score", 
+       title = "Relationship of teaching and beauty scores") +
+   geom_smooth(method = "lm") 
+#lm is how we make the regression line that uses least squares best fitting
+#  geom_smooth(method = "lm", se = FALSE) is how you ignore gray band) 
+
+```
+
+##Observed, fitted values and residuals
+```{r}
+# Fit regression model:
+score_model <- lm(score ~ bty_avg, data = evals)
+# Get regression table:
+get_regression_table(score_model)
+
+
+#Let’s only consider one observation: For example, say we are interested in the 21st instructor in this dataset:
+
+kable(evals_onex[21,])
+```
+
+b0 = 3.880
+b1 = 0.067
+y = 4.9
+x = 7.333 (from kable())
+
+\widehat{y} = b_0 + b_1 \cdot x = 3.88 + 0.067 * 7.333 = 4.369
+y−y^= 4.9 - 4.369 = 0.531
+Observed value = y = 4.9
+
+Fitted value = y^ = ______
+
+Residual = y−y^ = 0.531
+
+```{r}
+#Now, when we have to find residuals for all the values (not just one). R can do ir for us…
+
+regression_points <- get_regression_points(score_model)
+
+regression_points
+```
+
+```{r}
+#residual plot 
+score_mode <- lm(Beer ~ Hotwings, data = Beerwings)
+score_mode
+
+ggplot(score_mode, aes(x = .fitted, y = .resid)) + geom_point()
+```
+#ONE CATEGORICAL
+```{r}
+library(moderndive)
+library(gapminder)
+
+gapminder2007 <- gapminder %>%
+  filter(year == 2007) %>% 
+  select(country, continent, lifeExp, gdpPercap)
+#glimpse(gapminder2007)
+
+#two variables of interest: continent and lifeExp:
+gapminder2007 %>% 
+  select(continent, lifeExp) %>% 
+  skim()
+
+#Let’s proceed by comparing median and mean life expectancy between continents by using group_by(continent):
+
+by_continent <- gapminder2007 %>%
+  group_by(continent) %>%
+  summarize(median = median(lifeExp), mean = mean(lifeExp), N = n())
+
+kable(by_continent)
+
+```
+
+```{r}
+#facet histogram
+ggplot(data = gapminder2007, aes(x=gapminder2007$lifeExp, fill = continent)) +
+  geom_histogram(color = "cyan", binwidth = 5) + xlab("life exp by year") +
+  ggtitle("gapm") + facet_wrap(gapminder2007$continent)
+```
+1. skewness- 
+africa skewed right (bad or lower life exp)
+all the rest (besides oceania) skewed left
+
+
+2. spead - highest being africa/asia and oceania having the lowest
+oceania has no skewness since low data amount (2 countries)
+
+3. center
+wouldn't use the mean to find center here. 
+
+```{r}
+# Write the code to produce the side-by-side boxplots 
+
+ggplot(data = gapminder2007, aes(x=continent, y= lifeExp, fill = continent)) +
+  geom_boxplot(color = "cyan", binwidth = 5) + xlab("Continent") +
+  ggtitle("          Life/Continent Boxplot") + ylab("Life Exp by year")
+```
+
+Observe the boxplot:
+
+ half of all countries in Asia have a life expectancy below 73 years whereas half of all countries in Asia have a life expectancy above 73 years. (This is because the Median life expectancy for the countries in Asia is 73).
+
+Africa and Asia have much more spread/variation in life expectancy as indicated by the IQR (the height of the boxes).
+
+Oceania has almost no spread/variation, but this might in large part be due to the fact there are only two countries in Oceania: Australia and New Zealand.
+
+The median life expectancy of the Americas is roughly 20 years greater.
+The median life expectancy of Asia is roughly 20 years greater.
+The median life expectancy of Europe is roughly 25 years greater.
+The median life expectancy of Oceania is roughly 27.8 years greater.
+
+##Linear regression (Not simple)
+for categorical and numerical mixed the regression line would be the “best-fitting” line, but rather “differences relative to a baseline for comparison.”
+
+```{r}
+by_continent2 <- gapminder2007 %>%
+  group_by(continent) %>%
+  summarize(mean = mean(lifeExp), meanvsafrica = mean(lifeExp) - 54.8060385)
+
+kable(by_continent2)
+```
+
+```{r}
+lifeExp_model <- lm(lifeExp ~ continent, data = gapminder2007)
+lifeExp_model
+
+summary(lifeExp_model)
+```
+
+$\hat{\text{life exp}} = b_0 + b_{Amer} \cdot 1_{Amer}(x) + b_{Asia} \cdot 1_{Asia}(x) + b_{Euro} \cdot 1_{Euro}(x) + b_{Ocean} \cdot 1_{Ocean}(x)$
+
+= 54.8 + 18.8(1Amer^x) + 15.9(1Asia^x) + 22.8(1Euro^x) + 25.9(Ocean^x)
+
+Example: 1Amer^x = {1 if country x is in the Americas, 0 if not}
+
+ interpret the terms in the estimate column of the regression table. 
+ First b0 = Intercept = *54.8 = Africa*,
+  So 1 if in Africa 0 if not, since for country x in Africa we have the following equation:
+= 54.8 + 18.8(0) + 15.9(0) + 22.8(0) + 25.9(0) = $54.8$
+
+then do bAmer = 54.8 + 18.8(1) + 15.9(0) + 22.8(0) + 25.9(0) = $72.9$
+
+continue for other continents
+
+-------------------------------------------------------
+
+#Ch 7
+let’s also look at Histograms and boxplots as visual aids.
+
+```{r}
+
+myCredit2 <- Credit %>%
+  select(Balance, Limit, Income)
+
+skim(myCredit2)
+
+#Since our outcome variable Balance and the explanatory variables Limit and Income are numerical, we can and have to compute the correlation coefficient between pairs of these variables before we proceed to build a model.
+
+
+library(cowplot)
+
+p1 = ggplot(data = myCredit2, mapping = aes(x = Balance)) +
+  geom_histogram(binwidth = 200,  color = "black", fill = "magenta")
+
+p2 = ggplot(data = myCredit2, mapping = aes(x = Limit)) +
+  geom_histogram(binwidth = 800,  color = "black", fill = "cyan")
+
+p3 = ggplot(data = myCredit2, mapping = aes(x = Income)) +
+  geom_histogram(binwidth = 30,  color = "black", fill = "yellow")
+
+plot_grid(p1,p2,p3)
+
+
+
+```
+```{r}
+Credit %>%
+  select(Balance, Limit, Income) %>% 
+  cor()
+```
+  *Correlation:
+Balance with Limit is 0.862. This indicates a strong positive linear relationship, which makes sense as only individuals with large credit limits can accrue large credit card balances.
+
+Balance with Income is 0.464. This is suggestive of another positive linear relationship, although not as strong as the relationship between Balance and Limit.
+
+As an added bonus, we can read off the correlation coefficient of the two explanatory variables, Limit and Income of 0.792. In this case, we say there is a high degree of collinearity between these two explanatory variables.
+
+##Interpret the above Table:
+##Interpret the above graphs: (Center, Spread, Skewness)
+Balance: 
+talk about the 
+
+Slightly skewed to the right
+mean of 520
+
+Limit:
+Skewed to the right
+Most bell curve looking
+mean of 4735
+I'd argue it has the highest spread
+
+Income:
+Skewed to the right -> Maybe argue that most of the data is in one bin?
+Maybe change the binwidth to see if it's more flat
+Lowest spread
+
+for center and spread use iqr and median if it's skewed
+
+###Scatterplot time
+
+```{r}
+ggplot(myCredit2, mapping = aes(x = Limit, y = Balance)) +
+  geom_point() +
+   labs(x = "Limit", y = "Balance", 
+       title = "Relationship of Limit and Balance") +
+     geom_smooth(method = "lm", se = FALSE)
+
+
+
+ggplot(myCredit2, mapping = aes(x = Income, y = Balance)) +
+  geom_point() +
+   labs(x = "Limit", y = "Balance", 
+       title = "Relationship of Limit and Balance") + 
+     geom_smooth(method = "lm", se = FALSE)
+   
+   
+
+```
+The correlation of the scatterplots look similar to a near +1 correlation. one goes up and the other goes up.
+
+
+##Multiple regression
+Here is the syntax:
+model_name <- lm(y ~ x1 + x2 + ... +xn, data = data_frame_name)
+```{r}
+Balance_model <- lm(Balance ~ Limit + Income, data = Credit)
+Balance_model
+
+get_regression_table(Balance_model)  
+#summary(Balance_model)
+```
+How do we interpret these three values that define the regression plane?
+
+INT: -$385.18   credit card balance has both a credit Limit of 0 and Income 0.
+Limit:  every increase unit in credit Limit associated increase on average $0.26 in credit card
+
+Income: for every increase of one unit in Income ($1000 in income), there is an associated decrease of on average 7.66 in credit card
+
+ **Simpson’s Paradox**, a phenomenon in which a trend appears in several different groups of data but disappears or reverses when these groups are combined.
+ 
+##Observed/fitted values and residuals
+
+Get information about the “best-fitting” line from the regression table by applying the get_regression_table() function
+
+#one numerical one categorical explanatory var
+>All of the examples past here use a categorical
+
+```{r}
+evals_ch7 <- evals %>%
+  select(score, age, gender)
+         skim(evals_ch7)
+```
+  >compute the correlation between two numerical variables we have score and age. Recall that correlation coefficients only exist between numerical variables.
+  Note that one of these inputs is a categorical type so we cannot get a correlation out of it and we also can't get a histogram from the skim()
+
+```{r}
+evals_ch7 %>% 
+  get_correlation(formula = score ~ age)
+```
+  
+correlation= -0.107032	
+*We observe that they are weakly negatively correlated.*
+
+##visualize the correlation.
+
+```{r}
+#scatterplot of score over age; binary gender color two colors
+ggplot(evals_ch7, mapping = aes(x = age, y = score, color = gender)) +
+  geom_point() +
+   labs(x = "age", y = "score", 
+       title = "Graph using 'method = lm'") +
+     geom_smooth(method = "lm", se = FALSE)
+```
+Oberser the plot above:
+
+The line of regression for males shows that on average males score higher even as they age
+The female line of regression is a steeper downwards slope compared to males as they age
+the female score is on average higher at the start (younger)
+The female line of regression doesn't go past 60
+
+##Multiple regression: Parallel slopes model (interaction next)
+```{r}
+g_model = lm(score ~ age + gender, data = evals_ch7)
+get_regression_table(g_model)
+```
+
+for women: b0=4.484
+
+for men: b0+bmale=4.484+0.191=4.675
+
+Both men and women have the same slope. In other words, in this model the associated effect of age is the same for men and women. So for every increase of one year in age, there is on average an associated decrease of bage=−0.009 in teaching score.
+
+##Multiple regression: Interaction model
+
+```{r}
+score_model_interaction <- lm(score ~ age + gender + age * gender, data = evals_ch7)
+get_regression_table(score_model_interaction)
+```
+modeling equation for this scenario is (Writing the equation):
+y^=b0+b1⋅x1+b2⋅x2+b3⋅x1⋅x2
+score^=4.883−0.018⋅age−0.446⋅1Male(x)+0.014⋅age⋅1Male(x)
+
+Write the model for male:
+score^=4.883−0.018⋅age−0.446⋅1+0.014⋅age⋅1
+score^=4.437−0.004⋅age
+
+Write the model for female:
+score^=4.883−0.018⋅age−0.446⋅0+0.014⋅age⋅0
+score^=4.883−0.018⋅age
+
+while male instructors have a lower intercept, as they age, they have a less steep associated average decrease in teaching scores: 0.004 teaching score units per year as opposed to -0.018 for women.
+
+-------------------------------------------------------
+
+#homework 6
+load("OJUICE.Rdata")
+
+head(OJUICE)
+
+
+  #Predict the sweetness index if amount of pectin in the orange juice is 300 ppm
+simple = OJUICE %>% 
+  select(SWEET, PECTIN)
+
+attach(simple)
+SWEETs.lm = lm(SWEET ~ PECTIN)
+newdata = data.frame(PECTIN=300)
+predict(SWEETs.lm, newdata, interval="predict")
+detach(simple)
+
+*Give a practical interpretation of the value of $b_0$, if possible.*
+
+ If PECTIN had a hypothetical value of 0, we would expect them to have on average a SWEET value of 6.252068. We cannot have a practical value of 0 because the lowest PECTIN ever gets is 210 which is nowhere near zero. 
+ 
+  *Give a practical interpretation of the value of $b_1$, if possible.*
+
+  The sign is negative suggesting that as PECTIN goes up then SWEET goes down. For every 1 point increase to PECTIN there is an associated increase(decrease really) of -0.002311 SWEET.
+
+*Conduct diagnostics and comment on how "good" the model is.*
+  Definitely watch out for how we interpret b0 and b1. The interpretations we listed were more hypotheticals or associations rather than factural or casual increases.
+  
+  
+
+
+-------------------------------------------------------
+#Basic tools
+
+Summary stats:
+p0 for example the 0th percentile: the value at which 0% of observations are smaller than it. This is also known as the minimum.
+
+Solving regression eqs
+
+Fit the model and write the equation
+
+-------------------------------------------------------
+
+why did we use group_by?
+
+Why do we find this or that? What can they find for us?
+
+What graphs would we use (which ones are good for categorical or numerical)
+How do we create those graphs? lm? other commands?
+  *scatterplot two numerical
+  *boxplot one categorical and one numerical?
+  *histogram numerical singular?
+
+using H0 Ha x and y how do you create formulas or y=mx+b?
+
+Homework formulas and ideas?
+
+explanatory and _numerical_ variables
+
+-----------------------------------------------------------
